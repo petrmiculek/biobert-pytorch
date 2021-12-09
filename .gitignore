@@ -1,2 +1,6 @@
-/datasets/
-/named-entity-recognition/output/
+datasets
+**/__pycache__
+**/runs
+**/output
+cached*
+*.h5

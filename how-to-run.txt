@@ -9,6 +9,6 @@ pip install seqeval transformers
 # check gpu:
 nvidia-smi
 
-cd storage | cd biobert-pytorch/named-entity-recognition
+cd storage || cd biobert-pytorch/named-entity-recognition
 
 ./eval_all.sh

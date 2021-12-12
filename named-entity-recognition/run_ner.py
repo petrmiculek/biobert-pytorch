@@ -26,6 +26,7 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
+import transformers.integrations
 from seqeval.metrics import f1_score, precision_score, recall_score
 from torch import nn
 
@@ -115,6 +116,8 @@ def main():
         raise ValueError(
             f"Output directory ({training_args.output_dir}) already exists and is not empty. Use --overwrite_output_dir to overcome."
         )
+
+    print('In run_ner', training_args.output_dir)
 
     # Setup logging
     logging.basicConfig(
@@ -237,6 +240,8 @@ def main():
         eval_dataset=eval_dataset,
         compute_metrics=compute_metrics,
     )
+
+    trainer.add_callback(transformers.integrations.TensorBoardCallback)
 
     # Training
     if training_args.do_train:

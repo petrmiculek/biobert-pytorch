@@ -1,12 +1,12 @@
 #!/bin/bash
-#PBS -N ZPJa Biobert
+#PBS -N ZPJa_Biobert
 #PBS -l select=1:ngpus=1:ncpus=4:mem=32gb:scratch_local=10gb
 #PBS -l walltime=12:00:00 
 #PBS -m ae
 # The 4 lines above are options for scheduling system: job will run 12 hours at maximum, 1 machine with 4 processors + 4gb RAM memory + 10gb scratch memory are requested, email notification will be sent when the job aborts (a) or ends (e)
 
 # define a DATADIR variable: directory where the input files are taken from and where output will be copied to
-DATADIR=/storage/brno3-cerit/home/petrmiculek/biobert-pytorch/named-entity-recognition/
+DATADIR=/storage/brno3-cerit/home/petrmiculek/biobert-pytorch/named-entity-recognition
 
 cd "$DATADIR"
 

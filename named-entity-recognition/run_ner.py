@@ -106,18 +106,18 @@ def main():
         model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
     else:
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
-
-    if (
-        os.path.exists(training_args.output_dir)
-        and os.listdir(training_args.output_dir)
-        and training_args.do_train
-        and not training_args.overwrite_output_dir
-    ):
-        raise ValueError(
-            f"Output directory ({training_args.output_dir}) already exists and is not empty. Use --overwrite_output_dir to overcome."
-        )
+    if os.path.exists(training_args.output_dir):
+        if (
+            os.listdir(training_args.output_dir)
+            and training_args.do_train
+            and not training_args.overwrite_output_dir
+        ):
+            raise ValueError(f"Output directory ({training_args.output_dir}) already exists and is not empty. Use --overwrite_output_dir to overcome.")
+    else:
+        raise ValueError(f'Output directory ({training_args.output_dir}) does not exist.\nRunning from: {os.getcwd()}')
 
     print('In run_ner', training_args.output_dir)
+    training_args.disable_tqdm = True
 
     # Setup logging
     logging.basicConfig(

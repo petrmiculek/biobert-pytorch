@@ -1,5 +1,5 @@
 # Get a job at Metacentrum:
-qsub -I -q gpu -l select=1:mem=24gb:ngpus=1:ncpus=8 -l walltime=3:00:00
+qsub -I -q gpu -l select=1:mem=24gb:ngpus=1:ncpus=2 -l walltime=12:00:00
 
 # Start a singularity shell:
 singularity shell --nv /cvmfs/singularity.metacentrum.cz/NGC/PyTorch\:21.11-py3.SIF

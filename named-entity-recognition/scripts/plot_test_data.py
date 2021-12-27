@@ -1,66 +1,63 @@
-# import numpy as np
-# import pandas as pd
-# import matplotlib.pyplot as plt
-# import seaborn as sns
-
-import os
-import sys
-
-
-def get_f1(path):
-    with open(path, 'r') as f:
-        lines = f.readlines()
-        if len(lines) < 4:
-            raise ValueError()
-
-        f1_line = lines[3]
-        # line looks like: 'test_f1 = 0.035916125283895844'
-        return float(f1_line[f1_line.find('=') + 2:])
-
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
+import seaborn as sns
+from matplotlib.ticker import FuncFormatter
+from matplotlib import rcParams
 
 if __name__ == '__main__':
-    root = sys.argv[1]
-    # root = '../output'
 
-    dataset_dirs = os.listdir(root)
-    results_filename = 'test_results.txt'
+    df = pd.read_csv('all_test_results.csv', header=None, names=['dataset', 'model', 'f1', 'path'])
+    df['model'] = df['model'].map({'bert-base-cased': 'BERT',
+                                   'biobert-base-cased-v1.1': 'BioBERTv1.1',
+                                   'biobert-base-cased-v1.2': 'BioBERTv1.2',
+                                   })
+    df['dataset'] = df['dataset'].map({'NCBI-disease': 'NCBI-\n-disease',
+                                       'linnaeus': 'Linnaeus',
+                                       's800': 'S800',
+                                       'BC2GM': 'BC2GM',
+                                       'JNLPBA': 'JNLPBA',
+                                       'BC4CHEMD': 'BC4-\nCHEMD',
+                                       'BC5CDR-chem': 'BC5CDR-\n-chem',
+                                       })
 
-    f1s = {}
-    # dataset
-    for dataset in dataset_dirs:
-        dataset_dir_path = os.path.join(root, dataset)
-        if not os.path.isdir(dataset_dir_path):
-            continue
+    sns.set_theme(style="whitegrid")
+    sns.set_context('poster')
+    figure = plt.figure(figsize=(14, 6))
+    figure.suptitle('Model comparison')
 
-        # model (1/2) or (1/1)
-        model_dirs = os.listdir(dataset_dir_path)
+    gridspec = figure.add_gridspec(1, 1)
+    ax = figure.add_subplot(gridspec[0, 0])
+    figure.suptitle('F-1 Scores per Dataset Comparison')
+    # sns.despine(bottom=True, left=True)
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.tick_params(which="both", bottom=True)
 
-        models_and_paths = []
-        for model_dir in model_dirs:
-            dataset_model_path = os.path.join(dataset_dir_path, model_dir)
-            if not os.path.isdir(dataset_model_path):
-                continue
+    datasets = df.groupby('dataset')
+    avg_f1 = datasets['f1'].agg('mean').sort_values().index
+    # avg_f1_idx =
 
-            if model_dir == 'dmis-lab':
-                # double-step
-                dmis_models_path = os.path.join(dataset_dir_path, model_dir)
-                for dmis_model in os.listdir(dmis_models_path):
-                    dataset_model_path = os.path.join(dataset_dir_path, model_dir, dmis_model)
-                    models_and_paths.append((dmis_model, dataset_model_path))
+    sns.barplot(x='dataset', y='f1', data=df, hue='model', order=avg_f1)
+    ax.yaxis.set_major_formatter(mtick.PercentFormatter(1.0, decimals=0))
+    ax.yaxis.grid(True, which='minor')
+    ax.yaxis.set_minor_locator(mtick.MultipleLocator(5))
 
-            else:
-                models_and_paths.append((model_dir, dataset_model_path))
+    plt.xlabel('')
+    plt.ylabel('')
+    plt.ylim(bottom=0.66, top=1.0)
+    handles, labels = ax.get_legend_handles_labels()
+    ax.get_legend().remove()
 
-        for model, model_path in models_and_paths:
-            result_level_files = os.listdir(model_path)
+    figure.legend(handles, labels,
+                  title="Model",
+                  bbox_to_anchor=(0.10, 0.72),
+                  loc="center left",
+                  ncol=1
+                  )
+    figure.subplots_adjust(left=0.08, right=0.97, top=0.95, bottom=0.15)
 
-            if results_filename not in result_level_files:
-                # print(f'No results in: {result_level_files}')
-                continue
-
-            results_path = os.path.join(dataset_dir_path, results_filename)
-            f1 = get_f1(results_path)
-            print(dataset, model, f1)
-            # f1s[dataset] = f1
-
-
+    figure.savefig('poster-figure.svg')
+    figure.show()

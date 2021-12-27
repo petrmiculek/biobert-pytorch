@@ -11,6 +11,7 @@ export SAVE_STEPS=1000
 export SEED=1
 
 #CODE_DIR=/storage/brno3-cerit/home/petrmiculek/biobert-pytorch/named-entity-recognition
+#CODE_DIR=.
 #NER_MODEL=dmis-lab/biobert-base-cased-v1.1
 #DATASET=linnaeus
 DATA_DIR="${CODE_DIR}/${DATA_DIR}"
